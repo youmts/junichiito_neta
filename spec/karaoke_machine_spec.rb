@@ -3,7 +3,7 @@ require 'spec_helper'
 describe KaraokeMachine do
   example "音階を一つ上げると次の音階になること" do
     SCALES = %w[C C# D D# E F F# G G# A A# B]
-    
+
     expected_scales = SCALES.clone
     expected_scales.shift
     expected_scales << "C"
