@@ -29,27 +29,4 @@ describe HolidayParser do
 
     expect(HolidayParser.parse(input)).to eq expected
   end
-
-  describe "create_days_hash" do
-    example do
-
-      input = <<-'EOS'
-元日,2016/1/1,元日,2017/1/1,元日,2018/1/1
-成人の日,2016/1/11,成人の日,2017/1/9,成人の日,2018/1/8
-,,,,,
-月日は表示するアプリケーションによって形式が異なる場合があります。,,,,,
-      EOS
-
-      expected = {
-        Date.new(2016, 1, 1) => "元日",
-        Date.new(2016, 1, 11) => "成人の日",
-        Date.new(2017, 1, 1) => "元日",
-        Date.new(2017, 1, 9) => "成人の日",
-        Date.new(2018, 1, 1) => "元日",
-        Date.new(2018, 1, 8) => "成人の日",
-      }
-
-      expect(HolidayParser.create_days_hash(input.split("\n"))).to eq expected
-    end
-  end
 end
