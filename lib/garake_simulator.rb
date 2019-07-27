@@ -11,19 +11,18 @@ class GarakeSimulator
     '9' => %w(w x y z),
   }
 
-  def run(s)
+  def run(key_string)
     before_input_key = nil
     input_count = 0
     result = ''
 
-    s.chars.each do |key|
+    key_string.chars.each do |key|
       # 確定
       if key == '0'
-        if before_input_key
-          result += key_to_char(before_input_key, input_count)
-          before_input_key = nil
-          input_count = 0
-        end
+        result += key_to_char(before_input_key, input_count) if before_input_key
+
+        before_input_key = nil
+        input_count = 0
         next
       end
 
@@ -43,7 +42,7 @@ class GarakeSimulator
     def key_to_char(key, count)
       raise NotImplementedError(key) unless KEY_MAP.include?(key)
 
-      a = KEY_MAP[key]
-      a[(count-1) % a.size]
+      cycle_chars = KEY_MAP[key]
+      cycle_chars[(count-1) % cycle_chars.size]
     end
 end
