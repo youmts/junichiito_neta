@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe SumMatrix do
-  let(:sum_matrix) { SumMatrix.new }
-
-  example do
+  example "sum_matrix" do
     input = [
         [9, 85, 92, 20],
         [68, 25, 80, 55],
@@ -20,22 +18,21 @@ describe SumMatrix do
         [258, 291, 336, 297, 1182]
     ]
 
-    expect(sum_matrix.run(input)).to eq expected
+    expect(SumMatrix.sum_matrix(input)).to eq expected
   end
-end
 
-describe "print_matrix" do
-  example do
+  example "print_matrix" do
     input = [
       [9, 85, 92],
       [68, 25, 80],
       [43, 96, 71],
     ]
 
-    expect(print_matrix(input)).to eq <<~'EOS'.chop
-       9| 85| 92
-      68| 25| 80
-      43| 96| 71
+    expect(SumMatrix.print_matrix(input)).to eq <<~'EOS'.chop
+     9| 85| 92
+    68| 25| 80
+    43| 96| 71
     EOS
   end
 end
+

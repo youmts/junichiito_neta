@@ -1,5 +1,8 @@
-class SumMatrix
-  def run(input)
+module SumMatrix
+  extend self
+
+  # 行列に集計行を追加する
+  def sum_matrix(input)
     result = []
 
     # 最終行以外
@@ -18,36 +21,36 @@ class SumMatrix
 
     result
   end
-end
 
-# 行列を画面出力用の文字列に変換する
-def print_matrix(matrix)
-  # すべてのセルを文字列化する
-  text_matrix = matrix.map { |row| row.map { |x| x.to_s } }
+  # 行列を画面出力用の文字列に変換する
+  def print_matrix(matrix)
+    # すべてのセルを文字列化する
+    text_matrix = matrix.map { |row| row.map { |x| x.to_s } }
 
-  # 各カラムの最大文字数を計算
-  cols_size_max = Array.new(text_matrix[0].size, 0)
-  text_matrix.each do |row|
-    row.each_with_index do |x, idx|
-      cols_size_max[idx] = x.size if cols_size_max[idx] < x.size
+    # 各カラムの最大文字数を計算
+    cols_size_max = Array.new(text_matrix[0].size, 0)
+    text_matrix.each do |row|
+      row.each_with_index do |x, idx|
+        cols_size_max[idx] = x.size if cols_size_max[idx] < x.size
+      end
     end
-  end
 
-  # すべてのセルをjoinし、すべての行をjoinする
-  text_matrix.map { |row|
-    row.map.with_index { |x, idx| sprintf("%#{cols_size_max[idx]}d", x) }.join("| ")
-  }.join("\n")
+    # すべてのセルをjoinし、すべての行をjoinする
+    text_matrix.map { |row|
+      row.map.with_index { |x, idx| sprintf("%#{cols_size_max[idx]}d", x) }.join("| ")
+    }.join("\n")
+  end
 end
+
 
 if __FILE__ == $PROGRAM_NAME
   # n行✕m列の行列をランダム初期化する
-  sum_matrix = SumMatrix.new
   r = Random.new()
   n = r.rand(1..10)
   m = r.rand(1..10)
   input = Array.new(n) { Array.new(m) { r.rand(1000) } }
 
   # 合計を計算して出力
-  output = sum_matrix.run(input)
-  puts print_matrix(output)
+  output = SumMatrix.sum_matrix(input)
+  puts SumMatrix.print_matrix(output)
 end
