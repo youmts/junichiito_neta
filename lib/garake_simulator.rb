@@ -1,4 +1,6 @@
-class GarakeSimulator
+module GarakeSimulator
+  extend self
+
   KEY_MAP = {
     '1' => %w(. , ! ?) << ' ',
     '2' => %w(a b c),
@@ -11,7 +13,7 @@ class GarakeSimulator
     '9' => %w(w x y z),
   }
 
-  def run(key_string)
+  def simulate(key_string)
     before_input_key = nil
     input_count = 0
     result = ''
@@ -48,8 +50,7 @@ class GarakeSimulator
 end
 
 if __FILE__ == $PROGRAM_NAME
-  simulator = GarakeSimulator.new
   while line = gets
-    puts simulator.run(line)
+    puts GarakeSimulator.simulate(line)
   end
 end
