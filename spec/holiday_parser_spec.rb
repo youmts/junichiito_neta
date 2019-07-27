@@ -52,17 +52,4 @@ describe HolidayParser do
       expect(HolidayParser.create_days_hash(input.split("\n"))).to eq expected
     end
   end
-
-  describe "create_year_hash" do
-    example do
-      input = "平成28年（2016年）,,平成29年（2017年）,,平成30年（2018年）,"
-      expected = {2016 => {}, 2017 => {}, 2018 => {}}
-      expect(HolidayParser.create_year_hash(input)).to eq expected
-    end
-  end
-  describe "to_year" do
-    example do
-      expect(HolidayParser.to_year("平成28年（2016年）")).to eq 2016
-    end
-  end
 end

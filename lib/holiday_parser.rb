@@ -6,12 +6,11 @@ module HolidayParser
   def parse(csv)
     lines = csv.split("\n")
 
-    # 最初の行は年のリスト
-    ret = create_year_hash(lines[0])
-
+    # 最初の２行は無視する
     days = create_days_hash(lines.slice(2, lines.size - 2))
-
+    ret = {}
     days.each do |date, name|
+      ret[date.year] = {} unless ret.include?(date.year)
       ret[date.year][date] = name
     end
 
@@ -29,17 +28,4 @@ module HolidayParser
     end
     ret
   end
-
-  def create_year_hash(year_line)
-    ret = {}
-    year_line.split(",").select.with_index {|_, index| index % 2 == 0}.each do |cell|
-      ret[to_year(cell)] = {}
-    end
-    ret
-  end
-
-  def to_year(year_cell_string)
-    /（(\d+)年）/.match(year_cell_string).to_a[1].to_i
-  end
-
 end
