@@ -19,3 +19,35 @@ class SumMatrix
     result
   end
 end
+
+# 行列を画面出力用の文字列に変換する
+def print_matrix(matrix)
+  # すべてのセルを文字列化する
+  text_matrix = matrix.map { |row| row.map { |x| x.to_s } }
+
+  # 各カラムの最大文字数を計算
+  cols_size_max = Array.new(text_matrix[0].size, 0)
+  text_matrix.each do |row|
+    row.each_with_index do |x, idx|
+      cols_size_max[idx] = x.size if cols_size_max[idx] < x.size
+    end
+  end
+
+  # すべてのセルをjoinし、すべての行をjoinする
+  text_matrix.map { |row|
+    row.map { |x| sprintf("%5d", x) }.join("| ")
+  }.join("\n")
+end
+
+if __FILE__ == $PROGRAM_NAME
+  # n行✕m列の行列をランダム初期化する
+  sum_matrix = SumMatrix.new
+  r = Random.new()
+  n = r.rand(1..10)
+  m = r.rand(1..10)
+  input = Array.new(n) { Array.new(m) { r.rand(1000) } }
+
+  # 合計を計算して出力
+  output = sum_matrix.run(input)
+  puts print_matrix(output)
+end
