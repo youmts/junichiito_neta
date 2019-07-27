@@ -46,3 +46,10 @@ class GarakeSimulator
       cycle_chars[(count-1) % cycle_chars.size]
     end
 end
+
+if __FILE__ == $PROGRAM_NAME
+  simulator = GarakeSimulator.new
+  while line = gets
+    puts simulator.run(line)
+  end
+end
