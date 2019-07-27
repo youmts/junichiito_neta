@@ -35,7 +35,7 @@ def print_matrix(matrix)
 
   # すべてのセルをjoinし、すべての行をjoinする
   text_matrix.map { |row|
-    row.map { |x| sprintf("%5d", x) }.join("| ")
+    row.map.with_index { |x, idx| sprintf("%#{cols_size_max[idx]}d", x) }.join("| ")
   }.join("\n")
 end
 

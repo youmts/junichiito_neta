@@ -23,3 +23,19 @@ describe SumMatrix do
     expect(sum_matrix.run(input)).to eq expected
   end
 end
+
+describe "print_matrix" do
+  example do
+    input = [
+      [9, 85, 92],
+      [68, 25, 80],
+      [43, 96, 71],
+    ]
+
+    expect(print_matrix(input)).to eq <<~'EOS'.chop
+       9| 85| 92
+      68| 25| 80
+      43| 96| 71
+    EOS
+  end
+end
