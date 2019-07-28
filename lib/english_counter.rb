@@ -4,16 +4,26 @@ module EnglishCounter
   extend self
 
   def parse(input)
-    words = input.split(/[\n\s]/)
-      .map { |x| custom_split(x) }.flatten
-      .select { |x| !x.strip.empty? }
-
-    p words
-
-    result = generate_result(words)
+    words = split_words(input)
+    idiom_hash, word_hash = group_idiom_word(words)
+    make_result(idiom_hash, word_hash)
   end
 
   private
+    def make_result(idiom_hash, word_hash)
+      result = EnglishCounter::Result.new
+      result.idioms = hash_to_array(idiom_hash)
+      result.words = hash_to_array(word_hash).select { |x| word?(x[1])}
+      result
+    end
+
+    def split_words(input)
+      input.split(/[\n\s]/)
+        .map {|x| custom_split(x)}.flatten
+        .select {|x| !x.strip.empty?}
+
+    end
+
     def custom_split(word)
       word.split(/([“”,.])/)
     end
@@ -26,14 +36,13 @@ module EnglishCounter
       end
     end
 
-    def generate_result(words)
+    def group_idiom_word(words)
       idiom_hash = Hash.new { 0 }
       word_hash = Hash.new { 0 }
 
       current_idiom = nil
       keep_words = nil
       words.each do |word|
-        p "#{current_idiom}, #{keep_words}"
         if current_idiom
           if word.start_with?(/[A-Z]/) || word == "of"
             current_idiom += " " + word
@@ -66,12 +75,7 @@ module EnglishCounter
         end
       end
 
-      result = EnglishCounter::Result.new
-      result.idioms = hash_to_array(idiom_hash)
-      result.words = hash_to_array(word_hash).select { |x| word?(x[1])}
-      pp result.idioms
-      pp result.words
-      result
+      return idiom_hash, word_hash
     end
 
     def hash_to_array(hash)
