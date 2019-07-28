@@ -48,23 +48,29 @@ module EnglishCounter
         self.keep_words = []
       end
 
-      def push_idiom(word)
-        self.current_idiom = [keep_words + [word]].join(" ")
+      def start_idiom(word)
+        self.current_idiom = [keep_words + [word]]
         self.keep_words = []
       end
 
       def add_idiom(word)
-        self.current_idiom += " " + word
+        self.current_idiom << word
       end
 
-      def pop_idiom
+      def end_idiom
         ret = self.current_idiom
         self.current_idiom = nil
         ret
       end
 
-      def keep(word)
+      def add_keep(word)
         self.keep_words << word
+      end
+
+      def end_keep
+        ret = self.keep_words.clone
+        self.keep_words = []
+        ret
       end
 
       def keeping?
@@ -83,26 +89,25 @@ module EnglishCounter
           if word.start_with?(/[A-Z]/) || word == "of"
             context.add_idiom(word)
           else
-            idiom_hash[context.pop_idiom] += 1
+            idiom_hash[context.end_idiom.join(" ")] += 1
 
             word_hash[word] += 1
           end
         else
           if word.start_with?(/[A-Z]/)
             if context.keeping?
-              context.push_idiom(word)
+              context.start_idiom(word)
             else
-              context.keep(word)
+              context.add_keep(word)
             end
           elsif word == "of"
             if context.keeping?
-              context.push_idiom(word)
+              context.start_idiom(word)
             else
               word_hash[word] += 1
             end
           else
-            context.keep_words.each { |x| word_hash[x] += 1 } if context.keeping?
-            context.keep_words = []
+            context.end_keep.each { |x| word_hash[x] += 1 }
             word_hash[word] += 1
           end
         end
