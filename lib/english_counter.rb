@@ -44,9 +44,13 @@ module EnglishCounter
       attr_accessor :current_idiom
       attr_accessor :keep_words
 
+      def initialize
+        self.keep_words = []
+      end
+
       def push_idiom(word)
-        self.current_idiom = keep_words + " " + word
-        self.keep_words = nil
+        self.current_idiom = [keep_words + [word]].join(" ")
+        self.keep_words = []
       end
 
       def add_idiom(word)
@@ -60,7 +64,11 @@ module EnglishCounter
       end
 
       def keep(word)
-        self.keep_words = word
+        self.keep_words << word
+      end
+
+      def keeping?
+        !self.keep_words.empty?
       end
     end
 
@@ -81,20 +89,20 @@ module EnglishCounter
           end
         else
           if word.start_with?(/[A-Z]/)
-            if context.keep_words
+            if context.keeping?
               context.push_idiom(word)
             else
               context.keep(word)
             end
           elsif word == "of"
-            if context.keep_words
+            if context.keeping?
               context.push_idiom(word)
             else
               word_hash[word] += 1
             end
           else
-            context.keep_words.split.each { |x| word_hash[x] += 1 } if context.keep_words
-            context.keep_words = nil
+            context.keep_words.each { |x| word_hash[x] += 1 } if context.keeping?
+            context.keep_words = []
             word_hash[word] += 1
           end
         end
