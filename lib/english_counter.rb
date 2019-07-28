@@ -41,40 +41,42 @@ module EnglishCounter
     end
 
     class GroupingContext
-      attr_accessor :current_idiom
-      attr_accessor :keep_words
-
       def initialize
-        self.keep_words = []
+        @current_idiom = nil
+        @keep_words = []
       end
 
       def start_idiom(word)
-        self.current_idiom = [keep_words + [word]]
-        self.keep_words = []
+        @current_idiom = [@keep_words + [word]]
+        @keep_words = []
       end
 
       def add_idiom(word)
-        self.current_idiom << word
+        @current_idiom << word
       end
 
       def end_idiom
-        ret = self.current_idiom
-        self.current_idiom = nil
+        ret = @current_idiom
+        @current_idiom = nil
         ret
       end
 
+      def in_idiom?
+        !!@current_idiom
+      end
+
       def add_keep(word)
-        self.keep_words << word
+        @keep_words << word
       end
 
       def end_keep
-        ret = self.keep_words.clone
-        self.keep_words = []
+        ret = @keep_words.clone
+        @keep_words = []
         ret
       end
 
       def keeping?
-        !self.keep_words.empty?
+        !@keep_words.empty?
       end
     end
 
@@ -85,7 +87,7 @@ module EnglishCounter
       context = GroupingContext.new
 
       words.each do |word|
-        if context.current_idiom
+        if context.in_idiom?
           if word.start_with?(/[A-Z]/) || word == "of"
             context.add_idiom(word)
           else
