@@ -3,6 +3,10 @@ require 'pp'
 module EnglishCounter
   extend self
 
+  class Result
+    attr_accessor :idioms, :words
+  end
+
   def parse(input)
     words = split_words(input)
     idiom_hash, word_hash = group_idiom_word(words)
@@ -83,6 +87,3 @@ module EnglishCounter
     end
 end
 
-class EnglishCounter::Result
-  attr_accessor :idioms, :words
-end
