@@ -14,30 +14,10 @@ module EnglishCounter
   end
 
   private
-    def make_result(idiom_hash, word_hash)
-      result = EnglishCounter::Result.new
-      result.idioms = hash_to_array(idiom_hash)
-      result.words = hash_to_array(word_hash).select { |x| word?(x[1])}
-      result
-    end
-
     def split_words(input)
       input.split(/[\n\s]/)
-        .map {|x| custom_split(x)}.flatten
+        .map {|x| x.split(/([“”,.])/)}.flatten
         .select {|x| !x.strip.empty?}
-
-    end
-
-    def custom_split(word)
-      word.split(/([“”,.])/)
-    end
-
-    def word?(word)
-      if %w(– “ ” , .).include?(word)
-        false
-      else
-        true
-      end
     end
 
     class GroupingContext
@@ -94,8 +74,26 @@ module EnglishCounter
       [idiom_hash, word_hash]
     end
 
+    def make_result(idiom_hash, word_hash)
+      result = EnglishCounter::Result.new
+      result.idioms = hash_to_array(idiom_hash)
+      result.words = hash_to_array(word_hash).select { |x| word?(x[1])}
+      result
+    end
+
+    def word?(word)
+      if %w(– “ ” , .).include?(word)
+        false
+      else
+        true
+      end
+    end
+
+
     def hash_to_array(hash)
-      hash.to_a.map { |x| [x[1], x[0]]}.sort { |a, b| (b[0] <=> a[0]).nonzero? || (a[1].downcase <=> b[1].downcase) }
+      hash.to_a
+        .map { |x| [x[1], x[0]]}
+        .sort { |a, b| (b[0] <=> a[0]).nonzero? || (a[1].downcase <=> b[1].downcase) }
     end
 end
 
