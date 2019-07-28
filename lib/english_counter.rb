@@ -42,27 +42,27 @@ module EnglishCounter
 
     class GroupingContext
       def initialize
-        @current_idiom = nil
+        @current_idiom_words = nil
         @keep_words = []
       end
 
       def start_idiom(word)
-        @current_idiom = [@keep_words + [word]]
+        @current_idiom_words = [@keep_words + [word]]
         @keep_words = []
       end
 
       def add_idiom(word)
-        @current_idiom << word
+        @current_idiom_words << word
       end
 
       def end_idiom
-        ret = @current_idiom
-        @current_idiom = nil
+        ret = @current_idiom_words
+        @current_idiom_words = nil
         ret
       end
 
       def in_idiom?
-        !!@current_idiom
+        !!@current_idiom_words
       end
 
       def add_keep(word)
@@ -92,7 +92,6 @@ module EnglishCounter
             context.add_idiom(word)
           else
             idiom_hash[context.end_idiom.join(" ")] += 1
-
             word_hash[word] += 1
           end
         else
