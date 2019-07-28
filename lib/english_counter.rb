@@ -115,7 +115,7 @@ module EnglishCounter
         end
       end
 
-      return idiom_hash, word_hash
+      [idiom_hash, word_hash]
     end
 
     def hash_to_array(hash)
