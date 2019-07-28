@@ -42,41 +42,25 @@ module EnglishCounter
 
     class GroupingContext
       def initialize
-        @current_idiom_words = nil
-        @keep_words = []
+        @current_words = []
       end
 
-      def start_idiom(word)
-        @current_idiom_words = [@keep_words + [word]]
-        @keep_words = []
-      end
-
-      def add_idiom(word)
-        @current_idiom_words << word
-      end
-
-      def end_idiom
-        ret = @current_idiom_words
-        @current_idiom_words = nil
-        ret
-      end
-
-      def in_idiom?
-        !!@current_idiom_words
-      end
-
-      def add_keep(word)
-        @keep_words << word
+      def keep_word(word)
+        @current_words << word
       end
 
       def end_keep
-        ret = @keep_words.clone
-        @keep_words = []
+        ret = @current_words
+        @current_words = []
         ret
       end
 
-      def keeping?
-        !@keep_words.empty?
+      def in_keep?
+        !@current_words.empty?
+      end
+
+      def print_status
+        pp @current_words
       end
     end
 
@@ -87,29 +71,22 @@ module EnglishCounter
       context = GroupingContext.new
 
       words.each do |word|
-        if context.in_idiom?
-          if word.start_with?(/[A-Z]/) || word == "of"
-            context.add_idiom(word)
+        if word.start_with?(/[A-Z]/)
+          context.keep_word(word)
+        elsif word == "of"
+          if context.in_keep?
+            context.keep_word(word)
           else
-            idiom_hash[context.end_idiom.join(" ")] += 1
             word_hash[word] += 1
           end
         else
-          if word.start_with?(/[A-Z]/)
-            if context.keeping?
-              context.start_idiom(word)
-            else
-              context.add_keep(word)
-            end
-          elsif word == "of"
-            if context.keeping?
-              context.start_idiom(word)
-            else
-              word_hash[word] += 1
-            end
+          word_hash[word] += 1
+
+          kept_words = context.end_keep
+          if kept_words.size > 1
+            idiom_hash[kept_words.join(" ")] += 1
           else
-            context.end_keep.each { |x| word_hash[x] += 1 }
-            word_hash[word] += 1
+            kept_words.each { |x| word_hash[x] += 1 }
           end
         end
       end
