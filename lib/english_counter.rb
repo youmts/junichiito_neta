@@ -16,7 +16,7 @@ module EnglishCounter
   private
     def split_words(input)
       input.split(/[\n\s]/)
-        .map {|x| x.split(/([“”,.])/)}.flatten
+        .map {|x| x.split(/([“”,.])/)}.flatten # 区切り文字を分割してリスト化する
         .select {|x| !x.strip.empty?}
     end
 
@@ -90,6 +90,9 @@ module EnglishCounter
     end
 
 
+    # 言葉 => 回数のハッシュを
+    # [回数, 言葉]の配列に変換して、
+    # 回数の降順 > 言葉の昇順にソートして返す
     def hash_to_array(hash)
       hash.to_a
         .map { |x| [x[1], x[0]]}
