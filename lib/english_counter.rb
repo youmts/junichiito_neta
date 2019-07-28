@@ -40,40 +40,61 @@ module EnglishCounter
       end
     end
 
+    class GroupingContext
+      attr_accessor :current_idiom
+      attr_accessor :keep_words
+
+      def push_idiom(word)
+        self.current_idiom = keep_words + " " + word
+        self.keep_words = nil
+      end
+
+      def add_idiom(word)
+        self.current_idiom += " " + word
+      end
+
+      def pop_idiom
+        ret = self.current_idiom
+        self.current_idiom = nil
+        ret
+      end
+
+      def keep(word)
+        self.keep_words = word
+      end
+    end
+
     def group_idiom_word(words)
       idiom_hash = Hash.new { 0 }
       word_hash = Hash.new { 0 }
 
-      current_idiom = nil
-      keep_words = nil
+      context = GroupingContext.new
+
       words.each do |word|
-        if current_idiom
+        if context.current_idiom
           if word.start_with?(/[A-Z]/) || word == "of"
-            current_idiom += " " + word
+            context.add_idiom(word)
           else
-            idiom_hash[current_idiom] += 1
-            current_idiom = nil
+            idiom_hash[context.pop_idiom] += 1
 
             word_hash[word] += 1
           end
         else
           if word.start_with?(/[A-Z]/)
-            if keep_words
-              current_idiom = keep_words + " " + word
-              keep_words = nil
+            if context.keep_words
+              context.push_idiom(word)
             else
-              keep_words = word
+              context.keep(word)
             end
           elsif word == "of"
-            if keep_words
-              current_idiom = keep_words + " " + word
-              keep_words = nil
+            if context.keep_words
+              context.push_idiom(word)
             else
               word_hash[word] += 1
             end
           else
-            keep_words.split.each { |x| word_hash[x] += 1 } if keep_words
-            keep_words = nil
+            context.keep_words.split.each { |x| word_hash[x] += 1 } if context.keep_words
+            context.keep_words = nil
             word_hash[word] += 1
           end
         end
