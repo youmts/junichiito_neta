@@ -42,3 +42,11 @@ module EnglishCounter
     end
 end
 
+if __FILE__ == $PROGRAM_NAME
+  if ARGV.size < 1
+    puts "usage: ruby lib/english_counter.rb sample/english.txt"
+    return
+  end
+
+  pp EnglishCounter.parse File.open(ARGV[0]).read
+end
