@@ -3,90 +3,32 @@ require 'pp'
 module EnglishCounter
   extend self
 
-  class Result
-    attr_accessor :idioms, :words
-  end
-
   def parse(input)
-    words = split_words(input)
-    idiom_hash, word_hash = group_idiom_word(words)
-    make_result(idiom_hash, word_hash)
+    # 熟語と単語を、熟語を優先的にマッチさせる正規表現を生成
+    word_char = '[-\w\/’]'
+    word = "#{word_char}+"
+    idiom_word = "[A-Z]#{word_char}*"
+    idiom_separator = "(?:\s+|\s+of\s+)"
+    word_regexp = /#{word}/
+    idiom_regexp = /#{idiom_word}(?:#{idiom_separator}#{idiom_word})+/
+    regexp = Regexp.union(idiom_regexp, word_regexp)
+
+    # 熟語か単語の出現回数を示すハッシュを作成
+    all = input.scan(regexp).each_with_object Hash.new(0) do |word, result|
+      result[word] += 1
+    end
+
+    # 熟語と単語のハッシュに分割
+    part = all.partition { |key, _| key.match? idiom_regexp }
+    make_result *part
   end
 
   private
-    def split_words(input)
-      input.split(/[\n\s]/)
-        .map {|x| x.split(/([“”,.])/)}.flatten # 区切り文字を分割してリスト化する
-        .select {|x| !x.strip.empty?}
-    end
-
-    class GroupingContext
-      def initialize
-        @current_words = []
-      end
-
-      def keep_word(word)
-        @current_words << word
-      end
-
-      def end_keep
-        ret = @current_words
-        @current_words = []
-        ret
-      end
-
-      def in_keep?
-        !@current_words.empty?
-      end
-
-      def print_status
-        pp @current_words
-      end
-    end
-
-    def group_idiom_word(words)
-      idiom_hash = Hash.new { 0 }
-      word_hash = Hash.new { 0 }
-
-      context = GroupingContext.new
-
-      words.each do |word|
-        if word.start_with?(/[A-Z]/)
-          context.keep_word(word)
-        elsif word == "of"
-          if context.in_keep?
-            context.keep_word(word)
-          else
-            word_hash[word] += 1
-          end
-        else
-          word_hash[word] += 1
-
-          kept_words = context.end_keep
-          if kept_words.size > 1
-            idiom_hash[kept_words.join(" ")] += 1
-          else
-            kept_words.each { |x| word_hash[x] += 1 }
-          end
-        end
-      end
-
-      [idiom_hash, word_hash]
-    end
-
     def make_result(idiom_hash, word_hash)
-      result = EnglishCounter::Result.new
-      result.idioms = hash_to_array(idiom_hash)
-      result.words = hash_to_array(word_hash).select { |x| word?(x[1])}
+      result = {}
+      result[:idioms]= hash_to_array(idiom_hash)
+      result[:words] = hash_to_array(word_hash)
       result
-    end
-
-    def word?(word)
-      if %w(– “ ” , .).include?(word)
-        false
-      else
-        true
-      end
     end
 
 
