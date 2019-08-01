@@ -9,7 +9,7 @@ class KaraokeMachine
 
   private
     # melodyを一音ずつに分解したArrayを返す
-    # 音でないもの（スペースや縦棒）は一文字ずつ要素にする
+    # 音でないもの（スペースや縦棒）も要素にする
     def tokenize(melody)
       scales = "CDEFGAB"
       sharps = /[#{scales}]#/
